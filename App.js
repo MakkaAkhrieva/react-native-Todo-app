@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { Navbar } from "./src/components/Navbar";
 import React, { useState } from "react";
 import { MainScreen } from "./src/screens/MainScreen";
@@ -24,7 +24,24 @@ export default function App() {
   };
 
   const removeTodo = (id) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    const selectedTodo = todos.find((todo) => todo.id === id);
+    Alert.alert(
+      "Delete element",
+      `Are you sure to delete ${selectedTodo.title}`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {
+            setTodoId(null);
+            setTodos((prev) => prev.filter((todo) => todo.id !== id));
+          },
+        },
+      ]
+    );
   };
 
   const goBackHandler = () => {
@@ -46,7 +63,13 @@ export default function App() {
   );
   if (todoId) {
     const selectedTodo = todos.find((todo) => todo.id == todoId);
-    content = <TodoScreen goBack={goBackHandler} todo={selectedTodo} />;
+    content = (
+      <TodoScreen
+        goBack={goBackHandler}
+        todo={selectedTodo}
+        onRemove={removeTodo}
+      />
+    );
   }
   return (
     <View>
