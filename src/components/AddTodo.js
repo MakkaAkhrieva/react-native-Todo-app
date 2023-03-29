@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Ionicons } from "@expo/vector-icons";
 import { View, StyleSheet, TextInput, Button, Alert } from "react-native";
 
 export const AddTodo = ({ onSubmit }) => {
@@ -23,7 +23,14 @@ export const AddTodo = ({ onSubmit }) => {
         autoCapitalize="none"
         keyboardType="default"
       />
-      <Button onPress={pressHandler} title="Add" />
+      <Ionicons.Button
+        name="add-circle-outline"
+        onPress={pressHandler}
+        size={24}
+        color="black"
+      >
+        Add
+      </Ionicons.Button>
     </View>
   );
 };
