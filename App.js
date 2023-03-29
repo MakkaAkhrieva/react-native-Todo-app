@@ -3,15 +3,35 @@ import { Navbar } from "./src/components/Navbar";
 import React, { useState } from "react";
 import { MainScreen } from "./src/screens/MainScreen";
 import { TodoScreen } from "./src/screens/TodoScreen";
+import * as Font from "expo-font";
+import AppLoading from "expo-app-loading";
+
+async function loadApplication() {
+  await Font.loadAsync({
+    "roboto-regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "roboto-bold": require("./assets/fonts/Roboto-Bold.ttf"),
+  });
+}
 
 export default function App() {
   const [todoId, setTodoId] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   const [todos, setTodos] = useState([
     { id: "1", title: "Learn React Native" },
     /*     { id: "2", title: "Learn React " },
     { id: "3", title: "Learn GraphQl" },
     { id: "4", title: "Learn Nest.js" }, */
   ]);
+
+  if (!isReady) {
+    return (
+      <AppLoading
+        startAsync={loadApplication}
+        onError={(err) => console.log(err)}
+        onFinish={() => setIsReady(true)}
+      />
+    );
+  }
 
   const addTodo = (title) => {
     setTodos((prev) => [
