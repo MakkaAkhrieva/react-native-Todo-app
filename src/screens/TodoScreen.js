@@ -4,7 +4,7 @@ import { THEME } from "../theme";
 import { AppCard } from "../components/ui/AppCard";
 import { EditModal } from "../components/EditModal";
 
-export const TodoScreen = ({ goBack, todo, onRemove }) => {
+export const TodoScreen = ({ goBack, todo, onRemove, onSave }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const removeHandler = () => {
@@ -19,9 +19,18 @@ export const TodoScreen = ({ goBack, todo, onRemove }) => {
     setModalVisible(false);
   };
 
+  const saveHandler = (title) => {
+    onSave(todo.id, title);
+    setModalVisible(false);
+  };
   return (
     <View>
-      <EditModal visible={modalVisible} onCancel={cancelModalHandler} />
+      <EditModal
+        value={todo.title}
+        visible={modalVisible}
+        onCancel={cancelModalHandler}
+        onSave={saveHandler}
+      />
       <AppCard style={styles.card}>
         <Text style={styles.title}>{todo.title}</Text>
         <Button title="Edit" onPress={modalHandler} />
