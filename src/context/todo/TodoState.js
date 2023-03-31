@@ -3,6 +3,7 @@ import { ADD_TODO, REMOVE_TODO, UPDATE_TODO } from "../types";
 import { TodoContext } from "./todoContext";
 import { todoReducer } from "./todoReducer";
 import { ScreenContext } from "../screen/screenContext";
+import { Alert } from "react-native";
 
 export const TodoState = ({ children }) => {
   const initialState = {
@@ -19,8 +20,20 @@ export const TodoState = ({ children }) => {
   const addTodo = (title) => dispatch({ type: ADD_TODO, title: title });
 
   const removeTodo = (id) => {
-    changeScreen(null);
-    dispatch({ type: REMOVE_TODO, id: id });
+    const todo = state.todos.find((t) => t.id === id);
+    Alert.alert("Delete element", `Are you sure to delete ${todo.title}`, [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          changeScreen(null);
+          dispatch({ type: REMOVE_TODO, id: id });
+        },
+      },
+    ]);
   };
 
   const updateTodo = (id, title) =>
