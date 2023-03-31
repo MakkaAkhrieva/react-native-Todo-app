@@ -1,25 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { View, StyleSheet } from "react-native";
 import { Navbar } from "./components/Navbar";
 import { THEME } from "./theme";
 import { MainScreen } from "./screens/MainScreen";
 import { TodoScreen } from "./screens/TodoScreen";
 import { TodoContext } from "./context/todo/todoContext";
+import { ScreenContext } from "./context/screen/screenContext";
 
 export const MainLayout = () => {
   const { todos, addTodo, removeTodo, updateTodo } = useContext(TodoContext);
-  const [todoId, setTodoId] = useState(null);
-  /*   const [todos, setTodos] = useState([]);
-   */
-  /*   const addTodo = (title) => {
-    setTodos((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        title: title,
-      },
-    ]);
-  }; */
+  const { changeScreen, todoId } = useContext(ScreenContext);
 
   /*   const removeTodo = (id) => {
     const selectedTodo = todos.find((todo) => todo.id === id);
@@ -43,24 +33,13 @@ export const MainLayout = () => {
   }; */
 
   const goBackHandler = () => {
-    setTodoId(null);
+    changeScreen(null);
   };
 
   const openTodoHandler = (id) => {
     console.log(id);
-    setTodoId(id);
+    changeScreen(id);
   };
-
-  /*   const updateTodo = (id, title) => {
-    setTodos((prev) =>
-      prev.map((todo) => {
-        if (todo.id === id) {
-          todo.title = title;
-        }
-        return todo;
-      })
-    );
-  }; */
 
   let content = (
     <MainScreen
