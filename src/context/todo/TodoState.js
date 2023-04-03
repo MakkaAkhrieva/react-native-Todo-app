@@ -78,8 +78,23 @@ export const TodoState = ({ children }) => {
     ]);
   };
 
-  const updateTodo = (id, title) =>
-    dispatch({ type: UPDATE_TODO, id: id, title: title });
+  const updateTodo = async (id, title) => {
+    clearError();
+    try {
+      await fetch(
+        `https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos/${id}.json`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        }
+      );
+      dispatch({ type: UPDATE_TODO, id: id, title: title });
+    } catch (error) {
+      showError("Something went wrong");
+      console.log(error);
+    }
+  };
 
   const showLoader = () => dispatch({ type: SHOW_LOADER });
 
