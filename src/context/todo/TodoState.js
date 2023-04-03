@@ -39,19 +39,26 @@ export const TodoState = ({ children }) => {
 
   const fetchTodos = async () => {
     showLoader();
-    const response = await fetch(
-      "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    const data = await response.json();
-    console.log(" Fetch data", data);
-    const todos = Object.keys(data).map((key) => ({ ...data[key], id: key }));
-    console.log("todos", todos);
-    dispatch({ type: FETCH_TODOS, todos });
-    hideLoader();
+    clearError();
+    try {
+      const response = await fetch(
+        "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await response.json();
+      console.log(" Fetch data", data);
+      const todos = Object.keys(data).map((key) => ({ ...data[key], id: key }));
+      console.log("todos", todos);
+      dispatch({ type: FETCH_TODOS, todos });
+    } catch (error) {
+      showError("Something went wrong");
+      console.log(error);
+    } finally {
+      hideLoader();
+    }
   };
 
   const removeTodo = (id) => {
