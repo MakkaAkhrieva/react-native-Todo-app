@@ -2,6 +2,7 @@ import React, { useReducer, useContext } from "react";
 import {
   ADD_TODO,
   CLEAR_ERROR,
+  FETCH_TODOS,
   HIDE_LOADER,
   REMOVE_TODO,
   SHOW_ERROR,
@@ -36,6 +37,23 @@ export const TodoState = ({ children }) => {
     dispatch({ type: ADD_TODO, title: title, id: data.name });
   };
 
+  const fetchTodos = async () => {
+    showLoader();
+    const response = await fetch(
+      "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    const data = await response.json();
+    console.log(" Fetch data", data);
+    const todos = Object.keys(data).map((key) => ({ ...data[key], id: key }));
+    console.log("todos", todos);
+    dispatch({ type: FETCH_TODOS, todos });
+    hideLoader();
+  };
+
   const removeTodo = (id) => {
     const todo = state.todos.find((t) => t.id === id);
     Alert.alert("Delete element", `Are you sure to delete ${todo.title}`, [
@@ -66,7 +84,15 @@ export const TodoState = ({ children }) => {
 
   return (
     <TodoContext.Provider
-      value={{ todos: state.todos, addTodo, removeTodo, updateTodo }}
+      value={{
+        todos: state.todos,
+        addTodo,
+        removeTodo,
+        updateTodo,
+        fetchTodos,
+        loading: state.loading,
+        error: state.error,
+      }}
     >
       {children}
     </TodoContext.Provider>
