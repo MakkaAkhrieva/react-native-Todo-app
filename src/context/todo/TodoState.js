@@ -13,6 +13,7 @@ import { TodoContext } from "./todoContext";
 import { todoReducer } from "./todoReducer";
 import { ScreenContext } from "../screen/screenContext";
 import { Alert } from "react-native";
+import { Http } from "../../http";
 
 export const TodoState = ({ children }) => {
   const initialState = {
@@ -24,31 +25,26 @@ export const TodoState = ({ children }) => {
   const [state, dispatch] = useReducer(todoReducer, initialState);
 
   const addTodo = async (title) => {
-    const response = await fetch(
-      "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }),
-      }
-    );
-    const data = await response.json();
-    console.log("Data", data);
-    dispatch({ type: ADD_TODO, title: title, id: data.name });
+    clearError();
+    try {
+      const data = await Http.post(
+        "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
+        { title }
+      );
+      dispatch({ type: ADD_TODO, title: title, id: data.name });
+    } catch (error) {
+      showError("Something went wrong");
+      console.log(error);
+    }
   };
 
   const fetchTodos = async () => {
     showLoader();
     clearError();
     try {
-      const response = await fetch(
-        "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
+      const data = await Http.get(
+        "https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos.json"
       );
-      const data = await response.json();
       console.log(" Fetch data", data);
       const todos = Object.keys(data).map((key) => ({ ...data[key], id: key }));
       console.log("todos", todos);
@@ -72,12 +68,8 @@ export const TodoState = ({ children }) => {
         text: "Delete",
         onPress: async () => {
           changeScreen(null);
-          await fetch(
-            `https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos/${id}.json`,
-            {
-              method: "DELETE",
-              headers: { "Content-Type": "application/json" },
-            }
+          await Http.delete(
+            `https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos/${id}.json`
           );
           dispatch({ type: REMOVE_TODO, id: id });
         },
@@ -88,13 +80,9 @@ export const TodoState = ({ children }) => {
   const updateTodo = async (id, title) => {
     clearError();
     try {
-      await fetch(
+      await Http.patch(
         `https://rn-todo-app-14c70-default-rtdb.firebaseio.com/todos/${id}.json`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title }),
-        }
+        { title }
       );
       dispatch({ type: UPDATE_TODO, id: id, title: title });
     } catch (error) {
